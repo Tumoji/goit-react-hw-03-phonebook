@@ -5,8 +5,6 @@ import ContactList from './ContactList';
 import Notification from './Notification';
 import Filter from './Filter';
 
-
-
 class App extends Component {
   state = {
     contacts: [
@@ -17,6 +15,13 @@ class App extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const storedContacts = localStorage.getItem('contacts');
+    if (storedContacts) {
+      this.setState({ contacts: JSON.parse(storedContacts) });
+    }
+  }
 
   addContact = (name, number) => {
     const { contacts } = this.state;
@@ -35,9 +40,15 @@ class App extends Component {
       number,
     };
 
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, newContact],
-    }));
+    this.setState(
+      prevState => ({
+        contacts: [...prevState.contacts, newContact],
+      }),
+      () => {
+        // Save updated contacts to local storage
+        localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+      }
+    );
   };
 
   deleteContact = contactId => {
